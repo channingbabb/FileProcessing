@@ -1,8 +1,9 @@
-package readers;
+package ChanningBabb_FileProcessing;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 
@@ -19,8 +20,6 @@ public class WordCounter implements Runnable, Callable<Long>{
 		this.MAGIC_WORD = magic_word;
 	}
 	
-	
-	
 	public void run() {
 		try {
 		countWords(words, file);
@@ -29,7 +28,6 @@ public class WordCounter implements Runnable, Callable<Long>{
 			System.out.println("Could not find file: " + file);
 		}
 	}
-	
 	
 	public static void countWords(HashMap<String, Integer> words, String fileName ) throws IOException {
 		Long startTime = System.currentTimeMillis();	
@@ -85,15 +83,50 @@ public class WordCounter implements Runnable, Callable<Long>{
 		return counter;
 	}
 	
-	
-
-
-	
-	
-	public Long call() throws Exception {
-		
+	public Long call() throws Exception {	
 		return countWord(MAGIC_WORD, file);
-		
-		
 	}
+	
+	
+	
+//  STREAMS DEMONSTRATION
+	public static long countWordsByIterating(List<String> words, int size) {
+		Long startTime = System.currentTimeMillis();
+		long count = 0;
+		
+		for (String w : words)
+			if (w.length() > size) count++;
+		
+		System.out.println("Iterator Time: " + (System.currentTimeMillis() - startTime));
+		return count;
+	}
+	
+	public static long countWordsWithStreams(List<String> words, int size) {
+		Long startTime = System.currentTimeMillis();
+		long count = words.stream()
+				.filter( w -> w.length() > size)
+				.count();
+		System.out.println("Stream Time: " + (System.currentTimeMillis() - startTime));
+		return count;
+	}
+	
+	public static long countWordsWithParallelStreams(List<String> words, int size) {
+		Long startTime = System.currentTimeMillis();
+		long count = words.parallelStream()
+				.filter( w -> w.length() > size)
+				.count();
+		System.out.println("Parallel Stream Time: " + (System.currentTimeMillis() - startTime));
+		return count;
+	}
+	
+	public static long countDistinctWords(List<String> words, int size) {
+		Long startTime = System.currentTimeMillis();
+		long count = words.stream()
+				.filter( w -> w.length() > size)
+				.distinct()
+				.count();
+		System.out.println("Stream Time: " + (System.currentTimeMillis() - startTime));
+		return count;
+	}
+	
 }
